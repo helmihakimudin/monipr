@@ -4,12 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>PR Monitoring</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         darkMode: "class",
       };
     </script>
+    <style>
+      select:invalid {
+        color: #9ca3af; /* Tailwind gray-400 */
+      }
+    </style>
     <link
       rel="stylesheet"
       href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"
@@ -19,12 +25,14 @@
     class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-6 transition-colors duration-300"
   >
     <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-bold">📑 Purchase Request Monitoring</h2>
+    <div class="md:flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold pb-2 md:pb-0">
+        📑 Purchase Request Monitoring
+      </h2>
       <div class="flex items-center gap-2">
         <button
           onclick="toggleDarkMode()"
-          class="px-3 py-1 transition flex items-center justify-center gap-1"
+          class="md:px-3 py-1 transition flex items-center justify-center gap-1"
         >
           <!-- Button untuk ke Dark Mode (🌙) -->
           <span
@@ -69,36 +77,32 @@
     <!-- Table -->
 
     <div
-      class="overflow-x-auto bg-white dark:bg-gray-800 shadow rounded-lg p-3"
+      class="overflow-x-auto bg-white dark:bg-gray-800 shadow rounded-lg px-10 py-5 w-full"
     >
       <table id="prTable" class="display w-full text-sm border-collapse py-4">
         <thead class="bg-blue-600 text-white">
           <tr>
             <th>No</th>
-            <th>Nama</th>
-            <th>Description</th>
+            <th>Reference</th>
             <th>Date</th>
-            <th>Qty</th>
-            <th>Unit</th>
-            <th>URL</th>
-            <th>Receive</th>
-            <th>Status</th>
-            <th>Notes</th>
+            <th>Requester</th>
+            <th>PR Number LN</th>
+            <th>PR Status LN</th>
             <th>Action</th>
           </tr>
         </thead>
       </table>
     </div>
 
-    <!-- Add Modal -->
     <div
       id="addModal"
       class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50"
     >
       <div
-        class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-11/12 md:w-2/3 lg:w-1/2"
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full min-w-2xl h-[100vh] flex flex-col"
       >
-        <form method="POST" action="/add">
+        <form method="POST" action="/add" class="flex flex-col h-full">
+          <!-- Header -->
           <div
             class="px-6 py-4 border-b dark:border-gray-700 flex justify-between items-center"
           >
@@ -111,279 +115,86 @@
               ✖
             </button>
           </div>
-          <div class="px-6 py-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm">Item</label>
-              <input
-                type="text"
-                name="name"
-                class="w-full p-2 rounded border dark:bg-gray-700 dark:focus:bg-white dark:focus:text-gray-700"
-                required
-              />
-            </div>
-            <div>
-              <label class="block text-sm">Requester</label>
-              <input
-                type="text"
-                name="requester"
-                value="IT"
-                readonly
-                class="w-full p-2 rounded border bg-gray-100 dark:bg-gray-700 dark:focus:bg-white dark:focus:text-gray-700"
-              />
-            </div>
-          </div>
-          <div class="px-6 py-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="md:col-span-2">
-              <label class="block text-sm">Description</label>
-              <textarea
-                name="description"
-                class="w-full p-2 rounded border dark:bg-gray-700 dark:focus:bg-white dark:focus:text-gray-700"
-              ></textarea>
-            </div>
-          </div>
-          <div class="px-6 py-2 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-sm">Date</label>
-              <input
-                type="date"
-                name="date"
-                class="w-full p-2 rounded border dark:bg-gray-700 dark:focus:bg-white dark:focus:text-gray-700"
-              />
-            </div>
-            <div>
-              <label class="block text-sm">Jumlah</label>
-              <input
-                type="number"
-                name="jumlah"
-                class="w-full p-2 rounded border dark:bg-gray-700"
-              />
-            </div>
-            <div>
-              <label class="block text-sm">Unit</label>
-              <select
-                name="unit"
-                class="w-full p-2 rounded border dark:bg-gray-700 dark:focus:bg-white dark:focus:text-gray-700"
-              >
-                <option value="pcs">PCS</option>
-                <option value="set">SET</option>
-                <option value="kg">KG</option>
-                <option value="m">Meter</option>
-                <option value="cm">Centimeter</option>
-                <option value="l">Liter</option>
-              </select>
-            </div>
-          </div>
-          <div class="px-6 py-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm">URL</label>
-              <input
-                type="text"
-                name="url"
-                class="w-full p-2 rounded border dark:bg-gray-700 dark:focus:bg-white dark:focus:text-gray-700"
-              />
-            </div>
-            <div>
-              <label class="block text-sm">Status</label>
-              <select
-                name="status"
-                class="w-full p-2 rounded border dark:bg-gray-700 dark:focus:bg-white dark:focus:text-gray-700"
-              >
-                <option value="pending">PENDING</option>
-                <option value="approved">APPROVED</option>
-                <option value="rejected">REJECTED</option>
-                <option value="done">DONE</option>
-              </select>
-            </div>
-            <div class="md:col-span-2">
-              <label class="block text-sm">Notes</label>
-              <textarea
-                name="notes"
-                class="w-full p-2 rounded border dark:bg-gray-700 dark:focus:bg-white dark:focus:text-gray-700"
-              ></textarea>
-            </div>
-          </div>
-          <div
-            class="px-6 py-4 border-t dark:border-gray-700 flex justify-end gap-2"
-          >
-            <button
-              class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-red-500 to-red-800 text-white font-medium shadow-md hover:from-blue-600 hover:to-indigo-700 hover:shadow-lg active:scale-95 transition-all duration-200"
-              data-modal-target="addModal"
-              data-modal-toggle="addModal"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-                class="w-4 h-4"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
+
+          <!-- Body (scrollable area) -->
+          <div class="px-6 py-4 overflow-y-auto flex-1">
+            <!-- Tambah di bagian Body -->
+            <div class="space-y-4">
+              <!-- Reference ID -->
+              <div>
+                <label class="block text-sm py-1">Reference ID</label>
+                <input
+                  id="add_reference_id"
+                  type="text"
+                  name="reference_id"
+                  class="w-full p-2 rounded border bg-gray-100 dark:bg-gray-700"
+                  required
+                  readonly
                 />
-              </svg>
-              <span>Cancel</span>
-            </button>
-            <button
-              class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium shadow-md hover:from-blue-600 hover:to-indigo-700 hover:shadow-lg active:scale-95 transition-all duration-200"
-              data-modal-target="addModal"
-              data-modal-toggle="addModal"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                class="w-5 h-5"
-              >
-                <path
-                  d="M17 3a1 1 0 00-1-1h-2.586a1 1 0 00-.707.293l-1.414 1.414A1 1 0 0110.586 4H5a1 1 0 00-1 1v11a1 1 0 001 1h10a1 1 0 001-1V3zM9 12a1 1 0 011-1h4a1 1 0 010 2h-4a1 1 0 01-1-1zm0-4a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z"
-                />
-              </svg>
+              </div>
 
-              <span>Save</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+              <!-- Item + Requester -->
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm py-1">Request Date</label>
+                  <input
+                    type="date"
+                    name="date"
+                    class="w-full p-2 rounded border dark:bg-gray-700 dark:focus:bg-white dark:focus:text-gray-700"
+                    required
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm py-1">Requester</label>
+                  <input
+                    type="text"
+                    name="requester"
+                    value="IT"
+                    readonly
+                    class="w-full p-2 rounded border bg-gray-100 dark:bg-gray-700"
+                    required
+                  />
+                </div>
+              </div>
 
-    <!-- Edit Modal -->
-    <div
-      id="editModal"
-      class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-    >
-      <div
-        class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-11/12 md:w-2/3 lg:w-1/2"
-      >
-        <form id="editForm">
-          <div
-            class="px-6 py-4 border-b dark:border-gray-700 flex justify-between items-center"
-          >
-            <h5 class="text-lg font-semibold">Edit Purchase Request</h5>
-            <button
-              type="button"
-              onclick="closeModal('editModal')"
-              class="text-gray-500 hover:text-gray-700"
-            >
-              ✖
-            </button>
-          </div>
-
-          <div class="px-6 py-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm">Item</label>
-              <input
-                type="text"
-                name="name"
-                id="edit_name"
-                class="w-full p-2 rounded border dark:bg-gray-700 dark:focus:bg-white dark:focus:text-gray-700"
-                required
-              />
-            </div>
-            <div>
-              <label class="block text-sm">Requester</label>
-              <input
-                type="text"
-                name="requester"
-                id="edit_requester"
-                readonly
-                class="w-full p-2 rounded border bg-gray-100 dark:bg-gray-700 dark:focus:bg-white dark:focus:text-gray-700"
-              />
+              <!-- Dynamic Items -->
+              <div>
+                <label class="block text-sm py-1">Purchase Items</label>
+                <div id="items-container" class="space-y-3"></div>
+                <button
+                  class="flex items-center mt-2 gap-2 px-3 py-1 rounded bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium shadow-md hover:from-blue-600 hover:to-indigo-700 hover:shadow-lg active:scale-95 transition-all duration-200"
+                  data-modal-target="addModal"
+                  data-modal-toggle="addModal"
+                  type="button"
+                  onclick="addItemRow()"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    class="w-5 h-5"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 4v16m8-8H4"
+                    />
+                  </svg>
+                  <span>Tambah Item</span>
+                </button>
+              </div>
             </div>
           </div>
 
-          <div class="px-6 py-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="md:col-span-2">
-              <label class="block text-sm">Description</label>
-              <textarea
-                name="description"
-                id="edit_description"
-                class="w-full p-2 rounded border dark:bg-gray-700 dark:focus:bg-white dark:focus:text-gray-700"
-              ></textarea>
-            </div>
-          </div>
-
-          <div class="px-6 py-2 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-sm">Request Date</label>
-              <input
-                type="date"
-                name="date"
-                id="edit_date"
-                class="w-full p-2 rounded border dark:bg-gray-700 dark:focus:bg-white dark:focus:text-gray-700"
-                required
-              />
-            </div>
-            <div>
-              <label class="block text-sm">Jumlah</label>
-              <input
-                type="number"
-                name="jumlah"
-                id="edit_jumlah"
-                class="w-full p-2 rounded border dark:bg-gray-700 dark:focus:bg-white dark:focus:text-gray-700"
-                required
-              />
-            </div>
-            <div>
-              <label class="block text-sm">Unit</label>
-              <select
-                name="unit"
-                id="edit_unit"
-                class="w-full p-2 rounded border dark:bg-gray-700 dark:focus:bg-white dark:focus:text-gray-700"
-                required
-              >
-                <option value="pcs">PCS</option>
-                <option value="set">SET</option>
-                <option value="kg">KG</option>
-                <option value="m">Meter</option>
-                <option value="cm">Centimeter</option>
-                <option value="l">Liter</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="px-6 py-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm">URL</label>
-              <input
-                type="text"
-                name="url"
-                id="edit_url"
-                class="w-full p-2 rounded border dark:bg-gray-700 dark:focus:bg-white dark:focus:text-gray-700"
-              />
-            </div>
-            <div>
-              <label class="block text-sm">Status</label>
-              <select
-                name="status"
-                id="edit_status"
-                class="w-full p-2 rounded border dark:bg-gray-700 dark:focus:bg-white dark:focus:text-gray-700"
-                required
-              >
-                <option value="pending">PENDING</option>
-                <option value="approved">APPROVED</option>
-                <option value="rejected">REJECTED</option>
-                <option value="done">DONE</option>
-              </select>
-            </div>
-            <div class="md:col-span-2">
-              <label class="block text-sm">Notes</label>
-              <textarea
-                name="notes"
-                id="edit_notes"
-                class="w-full p-2 rounded border dark:bg-gray-700 dark:focus:bg-white dark:focus:text-gray-700"
-              ></textarea>
-            </div>
-          </div>
-
+          <!-- Footer -->
           <div
             class="px-6 py-4 border-t dark:border-gray-700 flex justify-end gap-2"
           >
             <button
               type="button"
-              onclick="closeModal('editModal')"
+              onclick="closeModal('addModal')"
               class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-red-500 to-red-800 text-white font-medium shadow-md hover:from-blue-600 hover:to-indigo-700 hover:shadow-lg active:scale-95 transition-all duration-200"
             >
               <svg
@@ -423,8 +234,535 @@
       </div>
     </div>
 
+    <!-- Edit Modal Fix -->
+    <!-- Modal Edit -->
+    <div
+      id="editModal"
+      class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+    >
+      <div
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full min-w-2xl h-[100vh] flex flex-col"
+      >
+        <form method="POST" class="flex flex-col h-full" id="editForm">
+          <!-- Header -->
+          <div
+            class="px-6 py-4 border-b dark:border-gray-700 flex justify-between items-center"
+          >
+            <h5 class="text-lg font-semibold">Edit Purchase Request</h5>
+            <button
+              type="button"
+              onclick="closeModal('editModal')"
+              class="text-gray-500 hover:text-gray-700"
+            >
+              ✖
+            </button>
+          </div>
+
+          <!-- Body -->
+          <div class="px-6 py-4 overflow-y-auto flex-1">
+            <div class="space-y-4">
+              <input type="hidden" id="edit_id" name="id" />
+
+              <div>
+                <label class="block text-sm py-1">Reference ID</label>
+                <input
+                  id="edit_reference_id"
+                  type="text"
+                  name="reference_id"
+                  class="w-full p-2 rounded border bg-gray-100 dark:bg-gray-700"
+                  readonly
+                />
+              </div>
+
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm py-1">Request Date</label>
+                  <input
+                    type="date"
+                    id="edit_date"
+                    name="date"
+                    class="w-full p-2 rounded border dark:bg-gray-700"
+                    required
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm py-1">Requester</label>
+                  <input
+                    type="text"
+                    id="edit_requester"
+                    name="requester"
+                    class="w-full p-2 rounded border bg-gray-100 dark:bg-gray-700"
+                    readonly
+                  />
+                </div>
+              </div>
+
+              <!-- Dynamic Items -->
+              <div>
+                <label class="block text-sm py-1">Purchase Items</label>
+                <div id="edit-items-container" class="space-y-3"></div>
+                <button
+                  type="button"
+                  onclick="addItemRow('edit-items-container')"
+                  class="flex items-center mt-2 gap-2 px-3 py-1 rounded bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium shadow-md hover:from-blue-600 hover:to-indigo-700 hover:shadow-lg active:scale-95 transition-all duration-200"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    class="w-5 h-5"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 4v16m8-8H4"
+                    />
+                  </svg>
+                  <span>Tambah Item</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer -->
+                    <!-- Footer -->
+          <div
+            class="px-6 py-4 border-t dark:border-gray-700 flex justify-end gap-2"
+          >
+            <button
+              type="button"
+              onclick="closeModal('editModal')"
+              class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-red-500 to-red-800 text-white font-medium shadow-md hover:from-blue-600 hover:to-indigo-700 hover:shadow-lg active:scale-95 transition-all duration-200"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                class="w-4 h-4"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+              <span>Cancel</span>
+            </button>
+            <button
+              type="submit"
+              class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium shadow-md hover:from-blue-600 hover:to-indigo-700 hover:shadow-lg active:scale-95 transition-all duration-200"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                class="w-5 h-5"
+              >
+                <path
+                  d="M17 3a1 1 0 00-1-1h-2.586a1 1 0 00-.707.293l-1.414 1.414A1 1 0 0110.586 4H5a1 1 0 00-1 1v11a1 1 0 001 1h10a1 1 0 001-1V3zM9 12a1 1 0 011-1h4a1 1 0 010 2h-4a1 1 0 01-1-1zm0-4a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z"
+                />
+              </svg>
+              <span>Update</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Detail -->
+    <div
+      id="detailModal"
+      class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+    >
+      <div
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full h-[100vh] flex flex-col"
+      >
+        <!-- Header -->
+        <div
+          class="px-6 py-4 border-b dark:border-gray-700 flex justify-between items-center"
+        >
+          <h5 class="text-lg font-semibold">
+            Item Purchase Request from
+            <span
+              id="refeid"
+              class="font-bold text-emerald-500 dark:text-yellow-600"
+            ></span>
+          </h5>
+          <button
+            type="button"
+            onclick="closeModal('detailModal')"
+            class="text-gray-500 hover:text-gray-700"
+          >
+            ✖
+          </button>
+        </div>
+        <!-- Table -->
+
+        <div
+          class="overflow-x-auto bg-white dark:bg-gray-800 shadow rounded-lg px-10 py-5"
+        >
+          <table
+            id="detailTable"
+            class="display w-full text-sm border-collapse py-4"
+          >
+            <thead class="bg-blue-600 text-white">
+              <tr>
+                <th>No</th>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Unit</th>
+                <th>Url</th>
+                <th>Remarks</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+
+        <!-- Table -->
+
+        <div
+          class="overflow-x-auto bg-white dark:bg-gray-800 shadow rounded-lg px-10 py-5"
+        >
+          <table
+            id="detailERPTable"
+            class="display w-full text-sm border-collapse py-4"
+          >
+            <thead class="bg-blue-600 text-white">
+              <tr>
+                <th>No</th>
+                <th>PR Number</th>
+                <th>Itemcode</th>
+                <th>Item Description</th>
+                <th>Qty</th>
+                <th>Unit</th>
+                <th>Converted</th>
+                <th>Order</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        {% for category, message in messages %}
+          Swal.fire({
+            icon: "{{ 'success' if category == 'success' else 'error' }}",
+            title: "{{ 'Success' if category == 'success' else 'Error' }}",
+            text: "{{ message }}",
+            timer: 2500,
+            showConfirmButton: false
+          });
+        {% endfor %}
+      });
+    </script>
+    {% endif %} {% endwith %}
+
+    <script>
+      // untuk mencegah request ganda
+      let currentEditRequest = null;
+
+      // helper escape untuk value yang akan dimasukkan ke innerHTML
+      function escapeHtml(str) {
+        return String(str || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      // tambah row — index disimpan per-container lewat attribute data-next-index
+      function addItemRow(containerId = "items-container", item = null) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        const next =
+          parseInt(container.getAttribute("data-next-index") || "0", 10) + 1;
+        container.setAttribute("data-next-index", next);
+        const rowIndex = next;
+
+        const row = document.createElement("div");
+        row.className = "grid md:grid-cols-9 gap-2 items-end";
+        row.id = `${containerId}-item-row-${rowIndex}`;
+
+        const name = escapeHtml(item?.name || "");
+        const qty = escapeHtml(item?.qty ?? "");
+        const unit = escapeHtml(item?.unit || "");
+        const url = escapeHtml(item?.url || "");
+        const note = escapeHtml(item?.note || "");
+
+        row.innerHTML = `
+      <input type="text" name="items[${rowIndex}][name]" value="${name}"
+        placeholder="Item Name" class="p-2 md:col-span-2 rounded border dark:bg-gray-700" required>
+
+      <input type="number" name="items[${rowIndex}][qty]" value="${qty}"
+        placeholder="Qty" class="p-2 rounded border dark:bg-gray-700" required>
+
+      <select name="items[${rowIndex}][unit]"
+        class="p-2 rounded border dark:bg-gray-700 col-span-2 md:col-span-1 " required>
+        <option value="" disabled hidden ${
+          !unit ? "selected" : ""
+        }>-- Unit --</option>
+        <option class="dark:text-white text-gray-700" value="pcs" ${unit === "pcs" ? "selected" : ""}>PCS</option>
+        <option class="dark:text-white text-gray-700" value="set" ${unit === "set" ? "selected" : ""}>SET</option>
+        <option class="dark:text-white text-gray-700" value="kg" ${unit === "kg" ? "selected" : ""}>KG</option>
+        <option class="dark:text-white text-gray-700" value="m" ${unit === "m" ? "selected" : ""}>Meter</option>
+        <option class="dark:text-white text-gray-700" value="cm" ${
+          unit === "cm" ? "selected" : ""
+        }>Centimeter</option>
+        <option class="dark:text-white text-gray-700" value="l" ${unit === "l" ? "selected" : ""}>Liter</option>
+      </select>
+
+      <input type="text" name="items[${rowIndex}][url]" value="${url}"
+        placeholder="URL (optional)" class="p-2 md:col-span-2 rounded border dark:bg-gray-700">
+
+      <div class="flex gap-1 md:col-span-3">
+        <input type="text" name="items[${rowIndex}][note]" value="${note}"
+          placeholder="Note" class="p-2 rounded border dark:bg-gray-700 flex-1">
+        <button type="button" onclick="removeItemRow('${containerId}', ${rowIndex})"
+          class="px-3 py-1 rounded-lg bg-red-500 text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+                          stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                          <path stroke-linecap="round" stroke-linejoin="round" 
+                                d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+          </button>
+      </div>
+    `;
+
+        container.appendChild(row);
+      }
+
+      // removeItemRow: kompatibel dipanggil dengan (containerId, index) atau (index) (backward)
+      function removeItemRow(containerOrIndex, maybeIndex) {
+        if (maybeIndex === undefined) {
+          // dipanggil cuma dengan index -- cari di container yang biasa
+          const index = containerOrIndex;
+          const possible = [
+            `items-container-item-row-${index}`,
+            `edit-items-container-item-row-${index}`,
+            `item-row-${index}`,
+          ];
+          for (const id of possible) {
+            const r = document.getElementById(id);
+            if (r) {
+              r.remove();
+              return;
+            }
+          }
+        } else {
+          const containerId = containerOrIndex;
+          const index = maybeIndex;
+          const r = document.getElementById(`${containerId}-item-row-${index}`);
+          if (r) r.remove();
+        }
+      }
+
+      // clear + reset next-index
+      function clearItemsContainer(containerId) {
+        const c = document.getElementById(containerId);
+        if (!c) return;
+        c.innerHTML = "";
+        c.setAttribute("data-next-index", "0");
+      }
+
+      // close modal (jangan lupa panggil ini di tombol cancel/close)
+      function closeModal(modalId) {
+        document.getElementById(modalId).classList.add("hidden");
+        // bersihkan container edit agar tidak menumpuk (opsional)
+        if (modalId === "editModal")
+          clearItemsContainer("edit-items-container");
+      }
+    </script>
+
+    <!--Detail Script-->
+    <script>
+      $(document).on("click", ".detailBtn", function () {
+        let id = $(this).data("key");
+        let requester = $(this).data("requester");
+        let date = $(this).data("date");
+        let reference_id = $(this).data("reference_id");
+        let pr_number = $(this).data("prnumber");
+
+        $("#refeid").html(reference_id);
+        // tampilkan modal
+        $("#detailModal").removeClass("hidden");
+
+        // kalau sebelumnya sudah pernah load DataTable, destroy dulu
+        if ($.fn.DataTable.isDataTable("#detailTable")) {
+          $("#detailTable").DataTable().destroy();
+        }
+
+        // inisialisasi DataTable baru
+        $("#detailTable").DataTable({
+          processing: true,
+          serverSide: true,
+          ajax: {
+            url: `/item-purchase/data/${id}`,
+            type: "GET",
+          },
+          destroy: true,
+          columns: [
+            {
+              data: null,
+              render: function (data, type, row, meta) {
+                return meta.row + meta.settings._iDisplayStart + 1;
+              },
+            },
+            { data: "item", className: "p-2" },
+            { data: "qty", className: "p-2" },
+            { data: "unit", className: "p-2" },
+            {
+              data: "url",
+              className: "p-2",
+              orderable: false,
+              render: function (data) {
+                return data
+                  ? `<a href="${data}" target="_blank" class="text-blue-500 hover:underline">Link</a>`
+                  : "-";
+              },
+            },
+            { data: "remarks", className: "p-2" },
+            {
+              data: "id",
+              className: "p-2 flex gap-2",
+              orderable: false,
+              render: function (data, type, row, meta) {
+                return `
+                  <button 
+                    class="editBtn flex items-center gap-1 px-3 py-1.5 rounded-lg 
+                          bg-emerald-500 text-white text-sm font-medium shadow 
+                          hover:bg-emerald-600 hover:shadow-md active:scale-95 
+                          transition-all duration-200" data-key="${row.id}" data-reference_id="${row.reference_id}" data-requester="${row.requester}" data-date="${row.date}"  data-notes="${row.notes}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+                        stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" 
+                        d="M16.862 4.487l1.65 1.65a2.121 2.121 0 010 3l-8.91 8.91a4 4 0 01-1.414.943l-3.097.966.966-3.097a4 4 0 01.943-1.414l8.91-8.91a2.121 2.121 0 013 0z" />
+                    </svg>
+                    Edit
+                  </button>
+
+                  <a href="/delete/${data}" 
+                    onclick="return confirm('Yakin hapus PR ini? ${row.reference_id}')"
+                    class="flex items-center gap-1 px-3 py-1.5 rounded-lg 
+                            bg-rose-500 text-white text-sm font-medium shadow 
+                            hover:bg-rose-600 hover:shadow-md active:scale-95 
+                            transition-all duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+                          stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                          <path stroke-linecap="round" stroke-linejoin="round" 
+                                d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    Delete
+                  </a>
+                `;
+              },
+            },
+          ],
+        });
+
+        // kalau sebelumnya sudah pernah load DataTable, destroy dulu
+        if ($.fn.DataTable.isDataTable("#detailERPTable")) {
+          $("#detailERPTable").DataTable().destroy();
+        }
+
+        // inisialisasi DataTable baru
+        $("#detailERPTable").DataTable({
+          processing: true,
+          serverSide: true,
+          ajax: {
+            url: `/item-purchase-erp/data/${pr_number}`,
+            type: "GET",
+          },
+          destroy: true,
+          columns: [
+            {
+              data: null,
+              render: function (data, type, row, meta) {
+                return meta.row + meta.settings._iDisplayStart + 1;
+              },
+            },
+            { data: "t_rqno", className: "p-2" },
+            { data: "t_item", className: "p-2" },
+            { data: "t_nids", className: "p-2" },
+            { data: "t_qoor", className: "p-2" },
+            { data: "t_cuqp", className: "p-2" },
+            {
+              data: "t_cnty",
+              orderable: false,
+              className: "p-2",
+              render: function (data) {
+                if (data === 3) {
+                  return `<span class="p-2">Purchase Order</span>`;
+                } else if (data === 1) {
+                  return `<span class="p-2">None</span>`;
+                }
+              },
+            },
+            { data: "t_prno", className: "p-2" },
+          ],
+        });
+      });
+
+      $(document).on("click", ".delete-pr", function (e) {
+        e.preventDefault();
+
+        const id = $(this).data("id");
+        const reference = $(this).data("reference");
+
+        Swal.fire({
+          title: `Hapus PR ${reference}?`,
+          text: "Data ini akan dihapus permanen!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#dc2626",
+          cancelButtonColor: "#6b7280",
+          confirmButtonText: "Ya, hapus!",
+          cancelButtonText: "Batal",
+          reverseButtons: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // AJAX request untuk delete
+            $.ajax({
+              url: `/delete/${id}`,
+              type: "DELETE", // pastikan route backend menerima DELETE
+              dataType: "json",
+              success: function () {
+                  Swal.fire({
+                    title: "Terhapus!",
+                    text: `PR ${reference} berhasil dihapus.`,
+                    icon: "success",
+                    timer: 1500,
+                    showConfirmButton: false,
+                  });
+                  // refresh DataTable
+                  $("#prTable").DataTable().ajax.reload(null, false);
+              },
+              error: function () {
+                Swal.fire({
+                  title: "Gagal!",
+                  text: "Terjadi kesalahan server.",
+                  icon: "error",
+                });
+              },
+            });
+          }
+        });
+      });
+    </script>
   </body>
 </html>
